@@ -124,7 +124,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">Homework 10 - web scraping using httr</h1>
 <h4 class="author"><em>Rowenna Gryba</em></h4>
-<h4 class="date"><em>04 December, 2018</em></h4>
+<h4 class="date"><em>05 December, 2018</em></h4>
 
 </div>
 
@@ -141,8 +141,7 @@ suppressPackageStartupMessages(library(kableExtra))</code></pre>
 <div id="ebirds-website---take-2" class="section level2">
 <h2>eBirds website - take 2!</h2>
 <p>Getting info off the eBirds site seemed overly hard with <code>rvest</code> - trying it again and we shall see if it’s easier.</p>
-<p>Let’s get the most recent notable sightings for Alaska. Yup! API makes it much easier.</p>
-<p>Let’s try and get the recent sightings from Alaska.</p>
+<p>Let’s get the most recent notable sightings for Alaska.</p>
 <p>First load the data.</p>
 <pre class="r"><code>eB &lt;- GET(&quot;https://ebird.org/ws2.0/data/obs/US-AK/recent?detail=full&amp;key=4djb9hct7gta&quot;)
 names(eB)</code></pre>
@@ -150,11 +149,12 @@ names(eB)</code></pre>
 ##  [6] &quot;content&quot;     &quot;date&quot;        &quot;times&quot;       &quot;request&quot;     &quot;handle&quot;</code></pre>
 <pre class="r"><code>status_code(eB) #status 200 - so good to go</code></pre>
 <pre><code>## [1] 200</code></pre>
+<p>Yup! API makes it much easier.</p>
 <p>Next let’s build a table of the species sighted and the date they were seen.</p>
 <pre class="r"><code>ebAK &lt;- content(eB) 
 ebAK &lt;- ebAK %&gt;% {
     tibble(
-        sp = map_chr(., &quot;sciName&quot;),
+        species = map_chr(., &quot;sciName&quot;),
         date = map(., &quot;obsDt&quot;)
     )
 }
@@ -165,7 +165,7 @@ kable(head(ebAK)) %&gt;%
 <thead>
 <tr>
 <th style="text-align:left;">
-sp
+species
 </th>
 <th style="text-align:left;">
 date
@@ -219,6 +219,107 @@ Poecile hudsonicus
 </td>
 <td style="text-align:left;">
 2018-12-04 15:15
+</td>
+</tr>
+</tbody>
+</table>
+<p>Now let’s get the taxonomy they use for the bird species listed - the scientific name, common name and species code.</p>
+<pre class="r"><code>eBhs &lt;- GET(&quot;https://ebird.org/ws2.0/ref/taxonomy/ebird?locale=en&amp;fmt=json&amp;key=4djb9hct7gta&quot;)
+status_code(eBhs) #status 200 - so good to go</code></pre>
+<pre><code>## [1] 200</code></pre>
+<pre class="r"><code>ebAKhs &lt;- content(eBhs)
+
+ebAKhs &lt;- ebAKhs %&gt;% {
+    tibble(
+        sci = map_chr(., &quot;sciName&quot;),
+        common = map_chr(., &quot;comName&quot;),
+        code = map_chr(., &quot;speciesCode&quot;)
+    )
+}
+
+write.csv(ebAKhs, &quot;eBirdsTax.csv&quot;)
+
+kable(head(ebAKhs)) %&gt;%
+    kable_styling()</code></pre>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+sci
+</th>
+<th style="text-align:left;">
+common
+</th>
+<th style="text-align:left;">
+code
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Struthio camelus
+</td>
+<td style="text-align:left;">
+Common Ostrich
+</td>
+<td style="text-align:left;">
+ostric2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Struthio molybdophanes
+</td>
+<td style="text-align:left;">
+Somali Ostrich
+</td>
+<td style="text-align:left;">
+ostric3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Struthio camelus/molybdophanes
+</td>
+<td style="text-align:left;">
+Common/Somali Ostrich
+</td>
+<td style="text-align:left;">
+y00934
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Rhea americana
+</td>
+<td style="text-align:left;">
+Greater Rhea
+</td>
+<td style="text-align:left;">
+grerhe1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Rhea pennata
+</td>
+<td style="text-align:left;">
+Lesser Rhea
+</td>
+<td style="text-align:left;">
+lesrhe2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Rhea pennata tarapacensis/garleppi
+</td>
+<td style="text-align:left;">
+Lesser Rhea (Puna)
+</td>
+<td style="text-align:left;">
+lesrhe4
 </td>
 </tr>
 </tbody>

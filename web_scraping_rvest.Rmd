@@ -14,6 +14,8 @@ suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(rvest))
 suppressPackageStartupMessages(library(knitr))
 suppressPackageStartupMessages(library(kableExtra))
+suppressPackageStartupMessages(library(purrr))
+
 ```
 
 ## eBird website
@@ -49,20 +51,25 @@ splitCombo <- full_join(split, splitInto, by = "genus") %>%
 splitCombo <- splitCombo %>%
 	select(SpSplit, SpInto)
 
+#export the table
+write.csv(splitCombo, "splitCombo.csv")
+
+#what the table looks like for good measure
 kable(head(splitCombo), format = "html") %>%
 	kable_styling()
 ```
 
-## James Bond actors
-Next task with `rvest` will be to determine the number of times an actor has been in a James Bond movie and which role.
+Next task with `rvest` will be to find the bird sightings recorded in Alaska, who did it and when.
 ```{r}
-jbActors <- read_html("https://www.the-numbers.com/movies/franchise/James-Bond#tab=summary") %>% 
-	html_table() %>%
-	.[[3]] %>%
-	select(Person, `Nr. ofMovies`, Role)
+ebAKrvest <- read_html("https://ebird.org/region/US-AK?yr=all") %>% 
+	html_table(fill = T)  %>%
+	.[[1]] 
 
-kable(head(jbActors), format = "html") %>%
+ebAKrvest <- ebAKrvest %>% 
+		select(Observer, Date)
+
+write.csv(ebAKrvest, "eBirdsAKobsDate.csv")
+
+kable(head(ebAKrvest), format = "html") %>%
 	kable_styling()
 ```
-
-P.S. The reason I switched to James Bond is that the eBirds site is complicated!!! Going to try it with `httr` and see if it's any better.

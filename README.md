@@ -3,8 +3,17 @@
 
 =============
 
-For this homework task I used `rvest` and .... to do webscraping from two websites.
+For this homework task I used `rvest` and `httr` to do webscraping from the eBirds website located [here](https://ebird.org/home).
 
-The Rmd file using `rvest` can be found [here](web_scraping_rvest.Rmd).
-The Rmd file using `rvest` can be found [here](web_scraping_rvest.Rmd).
+I have created two Rmd files that include my code and examples from the tables created. The tables resulting from the web scraping are also saved as .csv. 
+
+Please look at the `rvest` method first.
+
+The files can be found here:
+
+|Method|Rmd|csv files|
+|---|---|---|
+|rvest|[rvestRmd](web_scraping_rvest.Rmd)|[taxSplit](splitCombo.csv), [AKbirds](eBirdsAKobsDate)|
+|httr|[httrRmd](web_scraping_api.Rmd)|[taxaList](eBirdsTax.csv), [AKsightings](eBirdsAlaskaSpDate.csv)
+
 

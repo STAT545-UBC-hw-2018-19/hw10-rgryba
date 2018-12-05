@@ -15,6 +15,7 @@ suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(rvest))
 suppressPackageStartupMessages(library(knitr))
 suppressPackageStartupMessages(library(kableExtra))
+suppressPackageStartupMessages(library(purrr))
 ```
 
 ## eBird website
@@ -58,6 +59,10 @@ splitCombo <- full_join(split, splitInto, by = "genus") %>%
 splitCombo <- splitCombo %>%
 	select(SpSplit, SpInto)
 
+#export the table
+write.csv(splitCombo, "splitCombo.csv")
+
+#what the table looks like for good measure
 kable(head(splitCombo), format = "html") %>%
 	kable_styling()
 ```
@@ -97,59 +102,53 @@ kable(head(splitCombo), format = "html") %>%
 </tbody>
 </table>
 
-## James Bond actors
-Next task with `rvest` will be to determine the number of times an actor has been in a James Bond movie and which role.
+Next task with `rvest` will be to find the bird sightings recorded in Alaska, who did it and when.
 
 ```r
-jbActors <- read_html("https://www.the-numbers.com/movies/franchise/James-Bond#tab=summary") %>% 
-	html_table() %>%
-	.[[3]] %>%
-	select(Person, `Nr. ofMovies`, Role)
+ebAKrvest <- read_html("https://ebird.org/region/US-AK?yr=all") %>% 
+	html_table(fill = T)  %>%
+	.[[1]] 
 
-kable(head(jbActors), format = "html") %>%
+ebAKrvest <- ebAKrvest %>% 
+		select(Observer, Date)
+
+write.csv(ebAKrvest, "eBirdsAKobsDate.csv")
+
+kable(head(ebAKrvest), format = "html") %>%
 	kable_styling()
 ```
 
 <table class="table" style="margin-left: auto; margin-right: auto;">
  <thead>
   <tr>
-   <th style="text-align:left;"> Person </th>
-   <th style="text-align:right;"> Nr. ofMovies </th>
-   <th style="text-align:left;"> Role </th>
+   <th style="text-align:left;"> Observer </th>
+   <th style="text-align:left;"> Date </th>
   </tr>
  </thead>
 <tbody>
   <tr>
-   <td style="text-align:left;"> Desmond Llewelyn </td>
-   <td style="text-align:right;"> 17 </td>
-   <td style="text-align:left;"> Q </td>
+   <td style="text-align:left;"> Robin Collman </td>
+   <td style="text-align:left;"> 4 Dec 2018 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> Lois Maxwell </td>
-   <td style="text-align:right;"> 14 </td>
-   <td style="text-align:left;"> Miss Moneypenny </td>
+   <td style="text-align:left;"> Robin Corcoran </td>
+   <td style="text-align:left;"> 4 Dec 2018 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> Bernard Lee </td>
-   <td style="text-align:right;"> 11 </td>
-   <td style="text-align:left;"> M </td>
+   <td style="text-align:left;"> Justin Saunders </td>
+   <td style="text-align:left;"> 4 Dec 2018 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> Roger Moore </td>
-   <td style="text-align:right;"> 7 </td>
-   <td style="text-align:left;"> James Bond </td>
+   <td style="text-align:left;"> Lynn Barber </td>
+   <td style="text-align:left;"> 4 Dec 2018 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> Judi Dench </td>
-   <td style="text-align:right;"> 7 </td>
-   <td style="text-align:left;"> M </td>
+   <td style="text-align:left;"> Justin Saunders </td>
+   <td style="text-align:left;"> 4 Dec 2018 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> Sean Connery </td>
-   <td style="text-align:right;"> 7 </td>
-   <td style="text-align:left;"> James Bond </td>
+   <td style="text-align:left;"> Medium Yellowlegs </td>
+   <td style="text-align:left;"> 4 Dec 2018 </td>
   </tr>
 </tbody>
 </table>
-
-P.S. The reason I switched to James Bond is that the eBirds site is complicated!!! Going to try it with `httr` and see if it's any better.

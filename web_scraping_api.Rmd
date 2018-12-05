@@ -34,12 +34,35 @@ Next let's build a table of the species sighted and the date they were seen.
 ebAK <- content(eB) 
 ebAK <- ebAK %>% {
 	tibble(
-		sp = map_chr(., "sciName"),
+		species = map_chr(., "sciName"),
 		date = map(., "obsDt")
 	)
 }
 
+write.csv(ebAK, "eBirdsAlaskaSpDate.csv")
+
 kable(head(ebAK)) %>%
+	kable_styling()
+```
+
+Now let's get the taxonomy they use for the bird species listed - the scientific name, common name and species code.
+```{r}
+eBhs <- GET("https://ebird.org/ws2.0/ref/taxonomy/ebird?locale=en&fmt=json&key=4djb9hct7gta")
+status_code(eBhs) #status 200 - so good to go
+
+ebAKhs <- content(eBhs)
+
+ebAKhs <- ebAKhs %>% {
+	tibble(
+		sci = map_chr(., "sciName"),
+		common = map_chr(., "comName"),
+		code = map_chr(., "speciesCode")
+	)
+}
+
+write.csv(ebAKhs, "eBirdsTax.csv")
+
+kable(head(ebAKhs)) %>%
 	kable_styling()
 
 ```
