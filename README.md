@@ -13,7 +13,7 @@ The files can be found here:
 
 |Method|Rmd|csv files|
 |---|---|---|
-|rvest|[rvestRmd](web_scraping_rvest.Rmd)|[taxSplit](splitCombo.csv), [AKbirds](eBirdsAKobsDate)|
+|rvest|[rvestRmd](web_scraping_rvest.Rmd)|[taxSplit](splitCombo.csv), [AKbirds](eBirdsAKobsDate)
 |httr|[httrRmd](web_scraping_api.Rmd)|[taxaList](eBirdsTax.csv), [AKsightings](eBirdsAlaskaSpDate.csv)
 
 

@@ -35,7 +35,7 @@ ebAK <- content(eB)
 ebAK <- ebAK %>% {
 	tibble(
 		species = map_chr(., "sciName"),
-		date = map(., "obsDt")
+		date = map_chr(., "obsDt")
 	)
 }
 
@@ -59,6 +59,9 @@ ebAKhs <- ebAKhs %>% {
 		code = map_chr(., "speciesCode")
 	)
 }
+
+#limiting the data that I will save - it's very large otherwise
+ebAKhs <- ebAKhs[1:50,]
 
 write.csv(ebAKhs, "eBirdsTax.csv")
 
