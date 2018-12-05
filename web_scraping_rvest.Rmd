@@ -1,0 +1,68 @@
+---
+title: "Homework 10 - web scraping with rvest"
+author: "Rowenna Gryba"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  html_document:
+    keep_md: yes
+---
+
+# Scraping with `rvest`
+## Read in required libraries
+```{r}
+suppressPackageStartupMessages(library(tidyverse))
+suppressPackageStartupMessages(library(rvest))
+suppressPackageStartupMessages(library(knitr))
+suppressPackageStartupMessages(library(kableExtra))
+```
+
+## eBird website
+In this first task I am taking the list of species that have undergone a taxonimic split and providing a table of which species they have been split into.
+
+```{r}
+#web scraping
+split <- read_html("https://ebird.org/science/the-ebird-taxonomy") %>% 
+	html_nodes("ul:nth-child(45) em:nth-child(1)") %>%
+	html_text()
+
+split <- tibble(split)
+
+splitInto <- read_html("https://ebird.org/science/the-ebird-taxonomy") %>% 
+	html_nodes("li:nth-child(1) em:nth-child(3) , ul:nth-child(45) em:nth-child(2)") %>%
+	html_text()
+
+splitInto <- tibble(splitInto)
+
+#small data clean up for one of the genus names and divide the names into 2 columns
+splitInto <- splitInto %>%
+	separate(splitInto, c("genus", "sp2", "spp") , sep = " ") %>%
+	mutate(genus = recode(genus, `O.` = "Oceanodroma"))
+
+split <- split %>%
+	separate(split, c("genus", "sp1"), sep = " ")
+
+#join the tables
+splitCombo <- full_join(split, splitInto, by = "genus") %>%
+	mutate(SpSplit = paste(genus, sp1, sep = " "),
+				 SpInto = paste(genus, sp2, spp, sep = " "))
+	
+splitCombo <- splitCombo %>%
+	select(SpSplit, SpInto)
+
+kable(head(splitCombo), format = "html") %>%
+	kable_styling()
+```
+
+## James Bond actors
+Next task with `rvest` will be to determine the number of times an actor has been in a James Bond movie and which role.
+```{r}
+jbActors <- read_html("https://www.the-numbers.com/movies/franchise/James-Bond#tab=summary") %>% 
+	html_table() %>%
+	.[[3]] %>%
+	select(Person, `Nr. ofMovies`, Role)
+
+kable(head(jbActors), format = "html") %>%
+	kable_styling()
+```
+
+P.S. The reason I switched to James Bond is that the eBirds site is complicated!!! Going to try it with `httr` and see if it's any better.
